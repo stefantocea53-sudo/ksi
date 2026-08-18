@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Freecash x </title>
+  <link rel="icon" href="data:," />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #030704;
+      --card: #0b1710;
+      --card2: #101f16;
+      --green: #39ff88;
+      --green2: #19c762;
+      --text: #f5fff7;
+      --muted: #a7b8ab;
+      --yellow: #ffd56a;
+      --red: #ff5c6c;
+      --line: rgba(255,255,255,.10);
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(57,255,136,.35), transparent 35%),
+        radial-gradient(circle at 100% 25%, rgba(255,213,106,.16), transparent 28%),
+        linear-gradient(180deg, #06140b 0%, #030704 65%, #020302 100%);
+      overflow-x: hidden;
+    }
+
+    .payout-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background:
+        radial-gradient(circle at top, rgba(57,255,136,.34), transparent 38%),
+        rgba(2,5,3,.97);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: .22s ease;
+    }
+
+    .payout-gate.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .payout-box {
+      width: 100%;
+      max-width: 360px;
+      padding: 26px 20px 20px;
+      text-align: center;
+      border-radius: 32px;
+      background: linear-gradient(180deg, rgba(20,38,27,.96), rgba(6,12,8,.98));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+    }
+
+    .payout-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 24px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      color: #031108;
+      font-size: 27px;
+      font-weight: 1000;
+      background: linear-gradient(180deg, #67ffa3, #20d66b);
+      box-shadow: 0 16px 36px rgba(57,255,136,.28);
+    }
+
+    .payout-box h2 {
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -.055em;
+      margin-bottom: 12px;
+    }
+
+    .payout-box p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .payout-box p strong {
+      color: var(--green);
+    }
+
+    .payout-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .payout-actions button {
+      border: 0;
+      min-height: 56px;
+      border-radius: 18px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .continue-btn {
+      color: #031108;
+      background: linear-gradient(180deg, #67ffa3, #20d66b);
+      box-shadow: 0 16px 30px rgba(32,214,107,.24);
+    }
+
+    .back-btn {
+      color: #e8f3eb;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10) !important;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 14px 14px 112px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-top: 4px;
+    }
+
+    .brand-combo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 12px 34px rgba(0,0,0,.28);
+    }
+
+    .brand-combo img {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: rgba(255,255,255,.08);
+    }
+
+    .brand-combo span {
+      color: var(--green);
+      font-size: 18px;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4px 0 20px;
+    }
+
+    .payout-badge {
+      width: fit-content;
+      margin: 0 auto 24px;
+      padding: 10px 15px;
+      border-radius: 999px;
+      color: #baffd0;
+      background: rgba(57,255,136,.12);
+      border: 1px solid rgba(57,255,136,.34);
+      box-shadow: inset 0 0 20px rgba(57,255,136,.05);
+      font-size: 14px;
+      font-weight: 1000;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(38px, 12vw, 54px);
+      line-height: .98;
+      letter-spacing: -.065em;
+      font-weight: 1000;
+      margin-bottom: 18px;
+    }
+
+    h1 span {
+      color: var(--green);
+      text-shadow: 0 0 30px rgba(57,255,136,.25);
+    }
+
+    .mini-text {
+      max-width: 335px;
+      margin: 0 auto 22px;
+      text-align: center;
+      color: #dbe6de;
+      font-size: 17px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 auto 26px;
+      max-width: 350px;
+    }
+
+    .chip {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      color: #f4fff7;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .section-title {
+      margin: 22px 0 12px;
+      color: #eee9f6;
+      font-size: 13px;
+      font-weight: 1000;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .offer-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 112px;
+      padding: 16px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: 0 18px 48px rgba(0,0,0,.32);
+    }
+
+    .play {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: rgba(57,255,136,.12);
+      border: 4px solid var(--green);
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 0 25px rgba(57,255,136,.26);
+    }
+
+    .offer-card strong {
+      display: block;
+      max-width: 205px;
+      margin-bottom: 4px;
+      font-size: 18px;
+      line-height: 1.12;
+      letter-spacing: -.03em;
+    }
+
+    .offer-card span {
+      color: #dbcfe0;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 760;
+    }
+
+    .hot {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--yellow);
+      color: #3a2500;
+      font-size: 11px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .rating {
+      position: absolute;
+      right: 20px;
+      bottom: 17px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 1000;
+    }
+
+    .rating i {
+      color: var(--yellow);
+      font-style: normal;
+    }
+
+    .tip-card {
+      margin-top: 18px;
+      padding: 24px 22px 19px;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)),
+        radial-gradient(circle at top left, rgba(57,255,136,.12), transparent 34%);
+      border: 1px solid rgba(156,255,188,.22);
+      overflow: hidden;
+      box-shadow: 0 18px 48px rgba(0,0,0,.30);
+    }
+
+    .tip-label {
+      color: var(--yellow);
+      font-size: 14px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: -.02em;
+      margin-bottom: 18px;
+    }
+
+    .tip-card h2 {
+      font-size: 29px;
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      margin-bottom: 15px;
+    }
+
+    .tip-card h2 span {
+      color: var(--yellow);
+    }
+
+    .tip-card p {
+      color: #eadff0;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 760;
+      margin-bottom: 18px;
+    }
+
+    .rainbow {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #39ff88, #e8ff3f, #ffbb38, #ff6b4a);
+      box-shadow: 0 0 20px rgba(57,255,136,.22);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mini-step {
+      min-height: 180px;
+      padding: 18px 10px 12px;
+      border-radius: 18px;
+      text-align: center;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .mini-step .big {
+      display: block;
+      color: var(--green);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 1000;
+      margin-bottom: 10px;
+    }
+
+    .mini-step .icon {
+      display: block;
+      color: var(--green);
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .mini-step strong {
+      display: block;
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.12;
+      letter-spacing: -.035em;
+      margin-bottom: 10px;
+    }
+
+    .mini-step p {
+      color: #b8c7bd;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .cashout {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .cashout span {
+      padding: 9px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #d7e7db;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .note {
+      margin-top: 12px;
+      color: #8fa596;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .sticky {
+      position: fixed;
+      left: 50%;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: min(430px, calc(100% - 24px));
+      z-index: 20;
+      padding: 10px;
+      border-radius: 26px;
+      background: rgba(3,7,4,.78);
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+    }
+
+    .cta {
+      min-height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #031108;
+      background: linear-gradient(180deg, #67ffa3, #20d66b);
+      box-shadow: 0 16px 34px rgba(32,214,107,.28);
+      font-weight: 1000;
+      font-size: 18px;
+      letter-spacing: -.035em;
+      text-align: center;
+    }
+
+    .cta small {
+      display: block;
+      font-size: 11px;
+      font-weight: 850;
+      opacity: .72;
+      margin-top: 2px;
+      letter-spacing: 0;
+    }
+
+    footer {
+      padding: 28px 0 8px;
+      text-align: center;
+      color: #718477;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    footer a {
+      margin: 0 7px;
+      color: #7f9686;
+    }
+
+    @media (max-width: 370px) {
+      .chips {
+        grid-template-columns: 1fr;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-step {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="payout-gate" id="payoutGate" aria-hidden="true">
+    <div class="payout-box">
+      <div class="payout-icon">21+</div>
+      <h2>Quick payout tip</h2>
+      <p>
+        On the next page select the
+        <strong>21+</strong> option for higher payouts.
+      </p>
+
+      <div class="payout-actions">
+        <button class="continue-btn" id="continueBtn">Got it — continue →</button>
+        <button class="back-btn" id="backBtn">Go back</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="page">
+
+    <header class="top">
+      <div class="brand-combo">
+        <img src="assets/freecash-logo.webp" alt="Freecash">
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="payout-badge">✓ Over €50,000,000 paid out</div>
+
+      <h1>
+        Get paid for <span>your screen time</span>
+      </h1>
+
+      <p class="mini-text">
+        Turn your screen time into real rewards with Freecash.
+      </p>
+
+      <div class="chips">
+        <div class="chip">⚡ Fast payouts</div>
+        <div class="chip">🔒 Secure account</div>
+        <div class="chip">🎁 Daily bonuses</div>
+        <div class="chip">📱 Screen time</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-label">⚡ Pro tip</div>
+        <h2>Unlock <span>higher payouts</span></h2>
+        <p>Complete 2 to 3 starter offers to unlock better rewards and earn even more.</p>
+        <div class="rainbow"></div>
+      </div>
+
+      <div class="section-title">Recommended offer</div>
+
+      <div class="offer-card">
+        <div class="play">▶</div>
+        <div>
+          <strong>Earn with your screen time</strong>
+          <span>Earn rewards by exploring offers and completing simple tasks.</span>
+        </div>
+        <div class="hot">Popular offer</div>
+        <div class="rating"><i>★</i> 5.0</div>
+      </div>
+    </section>
+
+    <div class="section-title">How it works</div>
+
+    <section class="steps-grid">
+      <div class="mini-step">
+        <span class="big">1</span>
+        <span class="icon">＋</span>
+        <strong>Choose an offer</strong>
+        <p>Choose an available task in your dashboard.</p>
+      </div>
+
+      <div class="mini-step">
+        <span class="big">2</span>
+        <span class="icon">✓</span>
+        <strong>Complete the tasks</strong>
+        <p>Unlock higher payouts after your first offers.</p>
+      </div>
+
+      <div class="mini-step">
+        <span class="big">3</span>
+        <span class="icon">$</span>
+        <strong>Get paid</strong>
+        <p>Cash out your rewards quickly using the available options.</p>
+      </div>
+    </section>
+
+    <div class="cashout">
+      <span>PayPal</span>
+      <span>Crypto</span>
+      <span>Gift cards</span>
+    </div>
+
+    <p class="note">
+      Rewards are not guaranteed and may vary by offer, user and availability.
+    </p>
+
+    <footer>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Disclaimer</a><br>
+      © 2026
+    </footer>
+
+  </main>
+
+  <div class="sticky">
+    <a
+      class="cta"
+      href="https://taprkr.com/r/eyJ0IjoiZnJlZWNhc2gtY3BpIiwidGlkIjoiNDM1YWY5Y2Y2OGRlZGU5Y2EyNWMiLCJ0cyI6MTc4NTQzNzU2ODIzNX0?s1=pls&feb=1"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span>
+        Sign up & get a €10 bonus →
+        <small>Turn your screen time into rewards</small>
+      </span>
+    </a>
+  </div>
+
+  <script>
+
+    const payoutGate = document.getElementById("payoutGate");
+    const continueBtn = document.getElementById("continueBtn");
+    const backBtn = document.getElementById("backBtn");
+    const cta = document.querySelector(".cta");
+    let pendingUrl = "";
+
+    cta.addEventListener("click", function (event) {
+      event.preventDefault();
+      pendingUrl = cta.href;
+      payoutGate.classList.add("show");
+      payoutGate.setAttribute("aria-hidden", "false");
+    });
+
+    continueBtn.addEventListener("click", function () {
+      if (pendingUrl) {
+        window.location.href = pendingUrl;
+      }
+    });
+
+    backBtn.addEventListener("click", function () {
+      payoutGate.classList.remove("show");
+      payoutGate.setAttribute("aria-hidden", "true");
+      pendingUrl = "";
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const query = window.location.search;
+
+      if (!query) return;
+
+      document.querySelectorAll("a[href^='http']").forEach(function (link) {
+        const href = link.getAttribute("href");
+
+        if (href.includes("?")) {
+          link.setAttribute("href", href + query.replace("?", "&"));
+        } else {
+          link.setAttribute("href", href + query);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
